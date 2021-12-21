@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ImageCache</string>
+    <string name="get_image">Get Image</string>
+</resources>
