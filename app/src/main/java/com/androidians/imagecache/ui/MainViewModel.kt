@@ -20,6 +20,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val imageUrls = MutableLiveData<String>()
     val imageUrlsLiveData: LiveData<String> get() = imageUrls
 
+    // to get the imageUrls from assets and store in preferences
     fun getImageUrlFromAssets() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -30,6 +31,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // get the random url from the lsit
     fun getRandomImageUrl(imageUrlsJson: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -43,6 +45,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // get the image from random image url
     fun getImageFromUrl(imageUrl: String) {
 
     }
