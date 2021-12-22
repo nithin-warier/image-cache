@@ -16,7 +16,6 @@ import com.androidians.imagecache.databinding.ActivityMainBinding
 import com.androidians.imagecache.utils.Utils.IMAGE_CACHE_FILE_NAME
 import java.io.File
 
-
 class MainActivity : AppCompatActivity() {
 
     private val binding: ActivityMainBinding by lazy {
