@@ -13,9 +13,10 @@ import androidx.core.net.toUri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.androidians.imagecache.data.local.LocalStorage
 import com.androidians.imagecache.databinding.ActivityMainBinding
+import com.androidians.imagecache.utils.Utils.IMAGE_CACHE_FILE_NAME
 import java.io.File
 
-const val IMAGE_CACHE_FILE_NAME = "image_cache.jpg"
+
 class MainActivity : AppCompatActivity() {
 
     private val binding: ActivityMainBinding by lazy {
