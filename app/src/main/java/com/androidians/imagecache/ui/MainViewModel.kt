@@ -50,20 +50,4 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // get the image from random image url
-    fun getImageFromUrl(imageUrl: String) {
-        val downloadManager = getApplication<Application>().getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-        val downloadUri: Uri = Uri.parse(imageUrl)
-        val request = DownloadManager.Request(downloadUri)
-        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-            .setAllowedOverRoaming(false)
-            .setTitle(imageUrl)
-            .setMimeType("image/*") // Your file type. You can use this code to download other file types also.
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES,
-                File.separator + "filename.toString()" + ".jpg")
-        downloadManager.enqueue(request)
-        //Toast.makeText(this, "Image download started.", Toast.LENGTH_SHORT).show()
-    }
-
 }
