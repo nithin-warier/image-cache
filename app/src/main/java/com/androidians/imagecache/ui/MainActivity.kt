@@ -98,8 +98,6 @@ class MainActivity : AppCompatActivity() {
                         binding.errorMsgTV.visibility = View.GONE
                         binding.getImageBtn.isEnabled = true
                     }
-
-                    Log.e(TAG, "The default network is now: $network")
                 }
 
                 override fun onLost(network : Network) {
@@ -107,17 +105,6 @@ class MainActivity : AppCompatActivity() {
                         binding.errorMsgTV.visibility = View.VISIBLE
                         binding.getImageBtn.isEnabled = false
                     }
-
-                    Log.e(TAG,
-                        "The application no longer has a default network. The last default network was $network")
-                }
-
-                override fun onCapabilitiesChanged(network : Network, networkCapabilities : NetworkCapabilities) {
-                    Log.e(TAG, "The default network changed capabilities: $networkCapabilities")
-                }
-
-                override fun onLinkPropertiesChanged(network : Network, linkProperties : LinkProperties) {
-                    Log.e(TAG, "The default network changed link properties: $linkProperties")
                 }
             })
         }
