@@ -95,7 +95,6 @@ class MainActivity : AppCompatActivity() {
             binding.errorMsgTV.visibility = View.VISIBLE
             binding.getImageBtn.isEnabled = false
         }
-
     }
 
     private fun registerNetworkConnectivity() {
