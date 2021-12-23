@@ -97,27 +97,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun registerNetworkConnectivity() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            connectivityManager.registerDefaultNetworkCallback(object :
-                ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    runOnUiThread {
-                        binding.errorMsgTV.visibility = View.GONE
-                        binding.getImageBtn.isEnabled = true
-                    }
-                }
-
-                override fun onLost(network: Network) {
-                    runOnUiThread {
-                        binding.errorMsgTV.visibility = View.VISIBLE
-                        binding.getImageBtn.isEnabled = false
-                    }
-                }
-            })
-        }
-    }
-
     // fetch last cached bitmap stored as base64
     private fun fetchLastCachedImage() {
         if (localStorage.getBitmapInBase64().isNotEmpty()) {
@@ -187,6 +166,27 @@ class MainActivity : AppCompatActivity() {
             viewModel.getRandomImageUrl(localStorage.getImageUrls())
         } else {
             viewModel.getImageUrlFromAssets()
+        }
+    }
+
+    private fun registerNetworkConnectivity() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            connectivityManager.registerDefaultNetworkCallback(object :
+                ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    runOnUiThread {
+                        binding.errorMsgTV.visibility = View.GONE
+                        binding.getImageBtn.isEnabled = true
+                    }
+                }
+
+                override fun onLost(network: Network) {
+                    runOnUiThread {
+                        binding.errorMsgTV.visibility = View.VISIBLE
+                        binding.getImageBtn.isEnabled = false
+                    }
+                }
+            })
         }
     }
 
