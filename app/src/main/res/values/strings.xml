@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ImageCache</string>
     <string name="get_image">Get Image</string>
+    <string name="lost_network_connectivity_please_try_again">Not connected to network, try to connect and try again!!</string>
 </resources>

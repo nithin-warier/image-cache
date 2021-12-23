@@ -11,9 +11,11 @@ import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.GradientDrawable
-import android.net.Uri
+import android.net.*
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
@@ -26,6 +28,8 @@ import com.androidians.imagecache.utils.Utils.IMAGE_MIME_TYPE
 import com.androidians.imagecache.utils.base64ToByteCode
 import com.androidians.imagecache.utils.toBase64String
 import java.io.File
+import android.widget.Toast
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +39,9 @@ class MainActivity : AppCompatActivity() {
     }
     private val downloadManager: DownloadManager by lazy {
         getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+    }
+    private val connectivityManager: ConnectivityManager by lazy {
+        getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     }
     private val localStorage: LocalStorage by lazy {
         LocalStorage(this)
@@ -59,18 +66,20 @@ class MainActivity : AppCompatActivity() {
     private fun queryDownloads() {
         val cursor: Cursor = downloadManager.query(DownloadManager.Query().setFilterById(downloadId))
         cursor.moveToFirst()
-        cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
-        val uriStr = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
-        val uri = Uri.parse(uriStr)
-        file = null
-        file = File(uri.path!!)
-        // store in inMemoryCache
-        val bmp = ImageUtils.decodeSampledBitmapFromFile(file!!, imgViewWidth, imgViewHeight)
-        // store last image as base64
-        localStorage.putBitmapInBase64(bmp.toBase64String())
-        inMemoryCache[randomImageUrl] =
-            ImageUtils.decodeSampledBitmapFromFile(file!!, imgViewWidth, imgViewHeight)
-        binding.placeHolderIV.setImageBitmap(inMemoryCache[randomImageUrl])
+        try {
+            val uriStr = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
+            val uri = Uri.parse(uriStr)
+            file = File(uri.path!!)
+            // store in inMemoryCache
+            val bmp = ImageUtils.decodeSampledBitmapFromFile(file!!, imgViewWidth, imgViewHeight)
+            // store last image as base64
+            localStorage.putBitmapInBase64(bmp.toBase64String())
+            inMemoryCache[randomImageUrl] =
+                ImageUtils.decodeSampledBitmapFromFile(file!!, imgViewWidth, imgViewHeight)
+            binding.placeHolderIV.setImageBitmap(inMemoryCache[randomImageUrl])
+        } catch (e: Exception) {
+            Log.e(TAG, "error while querying downloads", e)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +90,43 @@ class MainActivity : AppCompatActivity() {
         init()
         registerReceiver(onCompleteReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         fetchLastCachedImage()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network : Network) {
+                    runOnUiThread {
+                        binding.errorMsgTV.visibility = View.GONE
+                        binding.getImageBtn.isEnabled = true
+                    }
+
+                    Log.e(TAG, "The default network is now: $network")
+                }
+
+                override fun onLost(network : Network) {
+                    runOnUiThread {
+                        binding.errorMsgTV.visibility = View.VISIBLE
+                        binding.getImageBtn.isEnabled = false
+                    }
+
+                    Log.e(TAG,
+                        "The application no longer has a default network. The last default network was $network")
+                }
+
+                override fun onCapabilitiesChanged(network : Network, networkCapabilities : NetworkCapabilities) {
+                    Log.e(TAG, "The default network changed capabilities: $networkCapabilities")
+                }
+
+                override fun onLinkPropertiesChanged(network : Network, linkProperties : LinkProperties) {
+                    Log.e(TAG, "The default network changed link properties: $linkProperties")
+                }
+            })
+        }
+
+        if (!isOnline()) {
+            binding.errorMsgTV.visibility = View.VISIBLE
+            binding.getImageBtn.isEnabled = false
+        }
+
     }
 
     // fetch last cached bitmap stored as base64
@@ -153,6 +199,11 @@ class MainActivity : AppCompatActivity() {
         } else {
             viewModel.getImageUrlFromAssets()
         }
+    }
+
+    private fun isOnline(): Boolean {
+        val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+        return networkInfo?.isConnected == true
     }
 }
 
