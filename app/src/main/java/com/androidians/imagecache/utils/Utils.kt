@@ -6,6 +6,7 @@ object Utils {
     const val SHARED_PREFERENCES_FILE_NAME = "image_cache"
     const val SHARED_PREFERENCES_IMAGE_URLS = "image_urls"
     const val IMAGE_CACHE_FILE_NAME = "image_cache.jpg"
+    const val IMAGE_MIME_TYPE = "image/*"
 
 
 }

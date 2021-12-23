@@ -22,8 +22,8 @@ import java.io.File
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val imageUrls = MutableLiveData<String>()
-    val imageUrlsLiveData: LiveData<String> get() = imageUrls
+    private val imageUrls = MutableLiveData<List<ImageUrl>>()
+    val imageUrlsLiveData: LiveData<List<ImageUrl>> get() = imageUrls
 
     // to get the imageUrls from assets and store in preferences
     fun getImageUrlFromAssets() {
@@ -32,6 +32,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val jsonString = getApplication<Application>().assets.open(ASSETS_IMAGE_URL_FILE_NAME).bufferedReader().use { it.readText() }
                 val localStorage = LocalStorage(getApplication<Application>())
                 localStorage.putImageUrls(jsonString)
+                getRandomImageUrl(localStorage.getImageUrls())
             }
         }
     }
@@ -44,8 +45,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val listItemType = object : TypeToken<List<ImageUrl>>() {}.type
                 val list = ArrayList<ImageUrl>()
                 list.addAll(gson.fromJson(imageUrlsJson, listItemType))
-                val randomIndex = Random.nextInt(list.size)
-                imageUrls.postValue(list[randomIndex].url)
+                imageUrls.postValue(list)
             }
         }
     }
