@@ -90,17 +90,26 @@ class MainActivity : AppCompatActivity() {
         init()
         registerReceiver(onCompleteReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         fetchLastCachedImage()
+        registerNetworkConnectivity()
+        if (!isOnline()) {
+            binding.errorMsgTV.visibility = View.VISIBLE
+            binding.getImageBtn.isEnabled = false
+        }
 
+    }
+
+    private fun registerNetworkConnectivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network : Network) {
+            connectivityManager.registerDefaultNetworkCallback(object :
+                ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
                     runOnUiThread {
                         binding.errorMsgTV.visibility = View.GONE
                         binding.getImageBtn.isEnabled = true
                     }
                 }
 
-                override fun onLost(network : Network) {
+                override fun onLost(network: Network) {
                     runOnUiThread {
                         binding.errorMsgTV.visibility = View.VISIBLE
                         binding.getImageBtn.isEnabled = false
@@ -108,12 +117,6 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
-
-        if (!isOnline()) {
-            binding.errorMsgTV.visibility = View.VISIBLE
-            binding.getImageBtn.isEnabled = false
-        }
-
     }
 
     // fetch last cached bitmap stored as base64
