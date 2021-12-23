@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     private var imgViewWidth = 0
     private var imgViewHeight = 0
     private var imageUrlList = ArrayList<ImageUrl>()
-    // once download image from remote server complete, this receiver gets called
+    // once downloaded image from remote server complete, this receiver gets called
     private val onCompleteReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             binding.getImageBtn.isEnabled = true
