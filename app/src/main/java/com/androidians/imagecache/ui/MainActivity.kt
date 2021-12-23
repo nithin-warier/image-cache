@@ -6,12 +6,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.res.Configuration
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.GradientDrawable
-import android.net.*
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkInfo
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -28,8 +29,6 @@ import com.androidians.imagecache.utils.Utils.IMAGE_MIME_TYPE
 import com.androidians.imagecache.utils.base64ToByteCode
 import com.androidians.imagecache.utils.toBase64String
 import java.io.File
-import android.widget.Toast
-import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
