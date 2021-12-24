@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import com.androidians.imagecache.utils.Utils
 import com.androidians.imagecache.utils.Utils.SHARED_PREFERENCES_BITMAP_IN_BASE64
 import com.androidians.imagecache.utils.Utils.SHARED_PREFERENCES_IMAGE_URLS
+import com.androidians.imagecache.utils.Utils.SHARED_PREFERENCES_USER_LANGUAGE
+import java.util.*
 
 class LocalStorage(private val context: Context) {
 
@@ -29,6 +31,14 @@ class LocalStorage(private val context: Context) {
 
     fun putBitmapInBase64(bitmapInBase64: String) {
         editor.putString(SHARED_PREFERENCES_BITMAP_IN_BASE64, bitmapInBase64).apply()
+    }
+
+    fun getUserLanguage() : String {
+        return preferences.getString(SHARED_PREFERENCES_USER_LANGUAGE, Locale.getDefault().language) ?: "en"
+    }
+
+    fun putUserLanguage(userLanguage: String) {
+        editor.putString(SHARED_PREFERENCES_USER_LANGUAGE, userLanguage).apply()
     }
 
 }
