@@ -9,6 +9,7 @@ object Utils {
     const val SHARED_PREFERENCES_USER_LANGUAGE = "user_language"
     const val IMAGE_CACHE_FILE_NAME = "image_cache.jpg"
     const val IMAGE_MIME_TYPE = "image/*"
+    const val ARG_ROTATED = "rotated"
 
 
 }

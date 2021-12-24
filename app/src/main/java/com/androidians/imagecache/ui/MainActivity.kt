@@ -24,6 +24,7 @@ import com.androidians.imagecache.data.local.LocalStorage
 import com.androidians.imagecache.data.models.ImageUrl
 import com.androidians.imagecache.databinding.ActivityMainBinding
 import com.androidians.imagecache.utils.ImageUtils
+import com.androidians.imagecache.utils.Utils.ARG_ROTATED
 import com.androidians.imagecache.utils.Utils.IMAGE_CACHE_FILE_NAME
 import com.androidians.imagecache.utils.Utils.IMAGE_MIME_TYPE
 import com.androidians.imagecache.utils.base64ToByteCode
@@ -45,8 +46,8 @@ class MainActivity : AppCompatActivity() {
     private val localStorage: LocalStorage by lazy {
         LocalStorage(this)
     }
-    private var file: File? = null
     private val viewModel : MainViewModel by viewModels()
+    private var file: File? = null
     private var randomImageUrl: String = ""
     private var downloadId: Long = 0
     private var imgViewWidth = 0
@@ -94,6 +95,18 @@ class MainActivity : AppCompatActivity() {
             binding.errorMsgTV.visibility = View.VISIBLE
             binding.getImageBtn.isEnabled = false
         }
+        // once rotated and recreating the activity
+        savedInstanceState?.let {
+            val rotated = it.getBoolean(ARG_ROTATED)
+            if (rotated) {
+                fetchLastCachedImage()
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(ARG_ROTATED, true)
     }
 
     // fetch last cached bitmap stored as base64
