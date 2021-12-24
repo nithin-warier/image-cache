@@ -29,11 +29,13 @@ import com.androidians.imagecache.utils.Utils.IMAGE_CACHE_FILE_NAME
 import com.androidians.imagecache.utils.Utils.IMAGE_MIME_TYPE
 import com.androidians.imagecache.utils.base64ToByteCode
 import com.androidians.imagecache.utils.toBase64String
+import org.json.JSONObject
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
     private val inMemoryCache = HashMap<String, Bitmap?>()
+    private val diskCache = HashMap<String, String?>()
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -70,10 +72,13 @@ class MainActivity : AppCompatActivity() {
             val uriStr = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
             val uri = Uri.parse(uriStr)
             file = File(uri.path!!)
-            // store in inMemoryCache
+
             val bmp = ImageUtils.decodeSampledBitmapFromFile(file!!, imgViewWidth, imgViewHeight)
+            // store in diskCache
+            diskCache[randomImageUrl] = file!!.path
             // store last image as base64
             localStorage.putBitmapInBase64(bmp.toBase64String())
+            // store in inMemoryCache
             inMemoryCache[randomImageUrl] =
                 ImageUtils.decodeSampledBitmapFromFile(file!!, imgViewWidth, imgViewHeight)
             binding.placeHolderIV.setImageBitmap(inMemoryCache[randomImageUrl])
@@ -104,6 +109,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val jsonStr = localStorage.getDiskCachePath()
+        val jsonObject = JSONObject(jsonStr)
+        val keysItr = jsonObject.keys()
+        while (keysItr.hasNext()) {
+            val key = keysItr.next()
+            val value = jsonObject.getString(key)
+            diskCache[key] = value
+        }
+    }
+
     // when device rotating this method gets called
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -119,6 +136,11 @@ class MainActivity : AppCompatActivity() {
             )
             binding.placeHolderIV.setImageBitmap(bmp)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        localStorage.putDiskcachePath(JSONObject(diskCache as Map<String, String>).toString())
     }
 
     override fun onDestroy() {
@@ -144,12 +166,32 @@ class MainActivity : AppCompatActivity() {
             binding.getImageBtn.isEnabled = false
 
             randomImageUrl = getRandomImageUrl()
-            val cache = inMemoryCache[randomImageUrl]
-            cache?.let {
+            loadImage(randomImageUrl)
+        }
+    }
+
+    private fun loadImage(randomImageUrl: String) {
+        val memoryCache = inMemoryCache[randomImageUrl]
+        when {
+            memoryCache != null -> {
                 Log.d(TAG, "from inMemory cache")
-                binding.placeHolderIV.setImageBitmap(it)
+                binding.placeHolderIV.setImageBitmap(memoryCache)
                 binding.getImageBtn.isEnabled = true
-            } ?: downloadImage(randomImageUrl)
+            }
+            diskCache[randomImageUrl] != null -> {
+                try {
+                    binding.getImageBtn.isEnabled = true
+                    file = File(diskCache[randomImageUrl]!!)
+                    inMemoryCache[randomImageUrl] = ImageUtils
+                        .decodeSampledBitmapFromFile(file!!, imgViewWidth, imgViewHeight)
+                    binding.placeHolderIV.setImageBitmap(inMemoryCache[randomImageUrl])
+                } catch (e: Exception) {
+                    downloadImage(randomImageUrl)
+                }
+            }
+            else -> {
+                downloadImage(randomImageUrl)
+            }
         }
     }
 

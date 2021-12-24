@@ -7,6 +7,7 @@ object Utils {
     const val SHARED_PREFERENCES_IMAGE_URLS = "image_urls"
     const val SHARED_PREFERENCES_BITMAP_IN_BASE64 = "bitmap_in_base64"
     const val SHARED_PREFERENCES_USER_LANGUAGE = "user_language"
+    const val SHARED_PREFERENCES_DISK_CACHE_PATH = "disk_cache_path"
     const val IMAGE_CACHE_FILE_NAME = "image_cache.jpg"
     const val IMAGE_MIME_TYPE = "image/*"
     const val ARG_ROTATED = "rotated"
