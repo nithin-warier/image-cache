@@ -104,6 +104,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // when device rotating this method gets called
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(ARG_ROTATED, true)
